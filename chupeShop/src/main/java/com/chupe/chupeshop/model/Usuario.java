@@ -1,5 +1,6 @@
 package com.chupe.chupeshop.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -28,26 +29,32 @@ public class Usuario implements UserDetails {
     @NotEmpty(message = "O campo nome é obrigatório")
     @NotNull(message = "O campo nome é obrigatório")
     private String nome;
+
     @Column(unique = true)
     @NotEmpty(message = "O campo email é obrigatório")
     @NotNull(message = "O campo email é obrigatório")
     private String email;
+
     @Column
     @NotEmpty(message = "O campo senha é obrigatório")
     @NotNull(message = "O campo senha é obrigatório")
     private String senha;
+
     @Column(unique = true)
     @NotEmpty(message = "O campo cpf é obrigatório")
     @NotNull(message = "O campo cpf é obrigatório")
     private String cpf;
+
     @Column
     @NotEmpty(message = "O campo telefone é obrigatório")
     @NotNull(message = "O campo telefone é obrigatório")
     private String telefone;
+
     @Column
     @NotEmpty(message = "O campo endereco é obrigatório")
     @NotNull(message = "O campo endereco é obrigatório")
     private String endereco;
+
     @Column
     private Boolean ativo;
     @Column
@@ -56,8 +63,11 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Pedido> pedidos;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Carrinho> carrinhos;
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Carrinho carrinho;
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
