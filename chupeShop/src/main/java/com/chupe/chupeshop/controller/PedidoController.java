@@ -11,6 +11,8 @@ import com.chupe.chupeshop.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/pedido")
 public class PedidoController {
@@ -37,14 +39,25 @@ public class PedidoController {
 
     @PostMapping("/adicionar")
     public ResponseEntity<?> adicionarPedido(@RequestBody AdicionarPedidoDTO adicionarPedidoDTO) {
-        Usuario usuario = usuarioService.findById(adicionarPedidoDTO.usuarioId()).get();
+        Usuario usuario = usuarioService.findById(adicionarPedidoDTO.usuarioId()).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Produto produto = produtoService.findById(adicionarPedidoDTO.produtoId()).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
         pedido.setNome(usuario.getNome());
-        pedido.setEndereco(usuario.getEndereco());
+        pedido.setEmail(usuario.getEmail());
+        pedido.setCpf(usuario.getCpf());
         pedido.setTelefone(usuario.getTelefone());
+        pedido.setEndereco(usuario.getEndereco());
+        pedido.setStatus("PENDENTE");
+        pedido.setFormaPagamento("DINHEIRO");
+        pedido.setData(LocalDateTime.now().toString());
 
-        Produto produto = produtoService.findById(adicionarPedidoDTO.produtoId()).get();
+        // Preenchendo os campos produto, quantidade e valor
+        pedido.setProduto(produto.getNome());
+        pedido.setQuantidade(String.valueOf(adicionarPedidoDTO.quantidade()));
+        pedido.setValor(String.valueOf(produto.getPreco()));
+
         PedidoItem pedidoItem = new PedidoItem();
         pedidoItem.setProdutoId(produto.getId());
         pedidoItem.setNome(produto.getNome());
@@ -56,8 +69,6 @@ public class PedidoController {
 
         pedido.getPedidoItems().add(pedidoItem);
         pedido.setTotal(produto.getPreco() * adicionarPedidoDTO.quantidade());
-        pedido.setStatus("PENDENTE");
-        pedido.setFormaPagamento("DINHEIRO");
 
         return ResponseEntity.ok(pedidoService.save(pedido));
     }

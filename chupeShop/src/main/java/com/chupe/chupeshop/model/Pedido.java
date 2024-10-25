@@ -1,6 +1,7 @@
 // Pedido.java
 package com.chupe.chupeshop.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,8 +22,22 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public int hashCode() {
+        // Use apenas o campo id para evitar loops
+        return (id != null) ? id.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Pedido pedido = (Pedido) obj;
+        return id != null && id.equals(pedido.id);
+    }
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonBackReference // Evita serializar a referência de volta para o 'Usuario'
     private Usuario usuario;
 
     private String nome;

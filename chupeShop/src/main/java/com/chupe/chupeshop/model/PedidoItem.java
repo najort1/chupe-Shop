@@ -20,8 +20,9 @@ public class PedidoItem {
 
     @ManyToOne
     @JoinColumn(name = "pedido_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference // Evita serializar a referência de volta para o 'Pedido'
     private Pedido pedido;
+
 
     private Long produtoId;
     private String nome;

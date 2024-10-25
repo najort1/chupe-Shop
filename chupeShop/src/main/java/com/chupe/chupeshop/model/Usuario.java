@@ -28,6 +28,20 @@ public class Usuario implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Override
+    public int hashCode() {
+        // Use apenas o campo id para evitar loops
+        return (id != null) ? id.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Usuario usuario = (Usuario) obj;
+        return id != null && id.equals(usuario.id);
+    }
+
     @Column
     @NotEmpty(message = "O campo nome é obrigatório")
     @NotNull(message = "O campo nome é obrigatório")
