@@ -1,12 +1,14 @@
 // Pedido.java
 package com.chupe.chupeshop.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -23,14 +25,6 @@ public class Pedido {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "carrinho_id", nullable = false)
-    private Carrinho carrinho;
-
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Set<ItemCarrinho> itens;
-
     private String nome;
     private String email;
     private String cpf;
@@ -43,4 +37,21 @@ public class Pedido {
     private String data;
     private String formaPagamento;
     private Double total;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<PedidoItem> pedidoItems = new HashSet<>();
+
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataAtualizacao;
+
+    @PrePersist
+    protected void onCreate() {
+        dataCriacao = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        dataAtualizacao = LocalDateTime.now();
+    }
 }
