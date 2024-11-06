@@ -4,8 +4,9 @@ import { useState } from "react";
 import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import useDarkMode from "../../hooks/useDarkMode.js";
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
-const Header = ({ UserLoggedIn }) => {
+const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
   const [fotoUsuario, setFotoUsuario] = useState("https://i.pravatar.cc/150?u=a042581f4e29026704d");
   const [nomeUsuario, setNomeUsuario] = useState("Jason Hughes");
   const [emailUsuario, setEmailUsuario] = useState("adm@gmail.com");
@@ -15,6 +16,29 @@ const Header = ({ UserLoggedIn }) => {
 
   const navegarCadastro = () => {navigate('/cadastro');}
   const navegarLogin = () => { navigate('/login') }
+
+
+  const capturarFotoENome = () => {
+    if(!localStorage.getItem("user")) return;
+    
+    const user = JSON.parse(localStorage.getItem("user"));
+    setFotoUsuario(user.picture);
+    setNomeUsuario(user.name);
+    setEmailUsuario(user.email);
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUsuarioLogado(false);
+    navigate('/');
+  }
+
+
+  useEffect(() => {
+    capturarFotoENome();
+  }
+  , []);
 
   return UserLoggedIn ? (
     <ChupeShopNav shouldHideOnScroll={true}>
@@ -41,7 +65,7 @@ const Header = ({ UserLoggedIn }) => {
               <p className="font-semibold">Logado como</p>
               <p className="font-semibold">{nomeUsuario}</p>
             </DropdownItem>
-            <DropdownItem key="logout" color="danger">
+            <DropdownItem key="logout" color="danger" onClick={handleLogout}>
               Log Out
             </DropdownItem>
           </DropdownMenu>

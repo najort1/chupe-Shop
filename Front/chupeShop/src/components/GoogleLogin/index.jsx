@@ -2,7 +2,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
-const GoogleLoginComponent = ({setErro}) => {
+const GoogleLoginComponent = ({setErro,setUsuarioLogado}) => {
 
     const navigate = useNavigate();
 
@@ -12,6 +12,7 @@ const GoogleLoginComponent = ({setErro}) => {
         localStorage.setItem("token", token);
         const user = jwtDecode(token);
         localStorage.setItem("user", JSON.stringify(user));
+        setUsuarioLogado(true);
         navigate("/");
         
     };
