@@ -5,31 +5,38 @@ import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import useDarkMode from "../../hooks/useDarkMode.js";
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import * as carrinho from "../../hooks/carrinho.js";
+import { Badge } from '@nextui-org/react';
 
 const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
   const [fotoUsuario, setFotoUsuario] = useState("https://i.pravatar.cc/150?u=a042581f4e29026704d");
   const [nomeUsuario, setNomeUsuario] = useState("Jason Hughes");
   const [emailUsuario, setEmailUsuario] = useState("adm@gmail.com");
+  const [itensCarrinho, setItensCarrinho] = useState(0);
   const isDarkMode = useDarkMode();
 
   const navigate = useNavigate();
 
   const navegarCadastro = () => {navigate('/cadastro');}
   const navegarLogin = () => { navigate('/login') }
-
+  const navegarCarrinho = () => { navigate('/carrinho') }
+  const navegarHome = () => { navigate('/') }
 
   const capturarFotoENome = () => {
-    if(!localStorage.getItem("user")) return;
-    
-    const user = JSON.parse(localStorage.getItem("user"));
-    setFotoUsuario(user.picture);
-    setNomeUsuario(user.name);
-    setEmailUsuario(user.email);
+    if(!localStorage.getItem("token")) return;
+    const token = localStorage.getItem("token");
+    const usuario = jwtDecode(token);
+    setNomeUsuario(usuario.nome);
+    setEmailUsuario(usuario.sub);
+    setFotoUsuario(usuario.foto);
+    setItensCarrinho(carrinho.obterCarrinho().length)
   }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("carrinho");
     setUsuarioLogado(false);
     navigate('/');
   }
@@ -37,6 +44,7 @@ const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
 
   useEffect(() => {
     capturarFotoENome();
+    
   }
   , []);
 
@@ -44,7 +52,8 @@ const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
     <ChupeShopNav shouldHideOnScroll={true}>
       <NavbarBrand>
         <ThemeSwitcher />
-        <p className="font-bold text-inherit text-3xl">ChupeShop</p>
+        <p className="font-bold text-inherit text-3xl cursor-pointer" onClick={navegarHome}>ChupeShop</p>
+
       </NavbarBrand>
 
       <NavbarContent as="div" justify="end">
@@ -70,13 +79,19 @@ const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
+
+        <Badge content={itensCarrinho} color="danger" shape="rectangle"
+        >
+        <box-icon name='cart' onClick={navegarCarrinho}></box-icon>
+        </Badge>
+
       </NavbarContent>
     </ChupeShopNav>
   ) : (
     <ChupeShopNav isBordered>
       <NavbarBrand>
         <ThemeSwitcher />
-        <p className="font-bold text-inherit text-3xl">ChupeShop</p>
+        <p className="font-bold text-inherit text-3xl cursor-pointer" onClick={navegarHome}>ChupeShop</p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem isActive>

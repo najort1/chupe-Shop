@@ -9,6 +9,7 @@ import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import {PaginationItem, PaginationCursor} from "@nextui-org/react";
 import { Pagination as PaginationNextUI } from "@nextui-org/react";
 
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, A11y, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -26,7 +27,7 @@ const Principal = ({produtos = [], usuarioLogado, setUsuariologado,setProdutos,p
   const navigate = useNavigate();
 
   const fetchProdutos = async (page) => {
-    page--;
+    page = page == 0 ? 0 : page - 1;
     const response = await axios.get(`http://localhost:8080/produtos/listar?page=${page}&size=10`, {
       validateStatus: function (status) {
         return status <= 500;
@@ -58,7 +59,7 @@ const Principal = ({produtos = [], usuarioLogado, setUsuariologado,setProdutos,p
 
 
       <main>
-        <section className="carousel mt-7 border-b-4">
+        <section className="carousel mt-7 border-b-4 ">
 
           <h1>
             <span className="text-2xl font-bold text-default-900">Principais Chupetas</span>
@@ -132,41 +133,7 @@ const Principal = ({produtos = [], usuarioLogado, setUsuariologado,setProdutos,p
                   <p className="preco text-center dark:text-black">R$ {item.preco}</p>
                   <p className="estoque text-center dark:text-black">Estoque: {item.estoque}</p>
                 </div>
-                {/* <div className="card-actions
-                  w-full
-                  bg-gray-300
-                  rounded-md
-                  flex
-                  justify-center
-                  p-2
-                ">
-                  <button onClick={() => navigate("/produto-detalhes", { state: { produto: item } })}>Detalhes</button>
-                </div> */}
-
               </div>
-
-              // <Card
-              //   shadow="sm"
-              //   key={index}
-              //   isPressable
-              //   onPress={() => navigate("/produto-detalhes", { state: { produto: item } })}
-              // >
-              //   <CardBody className="overflow-visible p-0">
-                  // <Image
-                  //   shadow="sm"
-                  //   radius="lg"
-                  //   width="100%"
-                  //   alt={item.nome}
-                  //   className="w-full object-cover"
-                  //   src={item.imagem}
-                  // />
-              //   </CardBody>
-              //   <CardFooter className="text-small justify-between">
-              //     <b>{item.nome}</b>
-              //     <p className="text-default-900 font-bold">R$ {item.preco}</p>
-              //     <p className="estoque">Estoque: {item.estoque}</p>
-              //   </CardFooter>
-              // </Card>
             ))}
             
           </section>

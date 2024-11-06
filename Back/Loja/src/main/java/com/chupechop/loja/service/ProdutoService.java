@@ -19,6 +19,23 @@ public class ProdutoService {
         produtoRepository.deleteById(id);
     }
 
+    public void diminuirEstoque(Long produtoId, int quantidade) {
+        Produto produto = produtoRepository.findById(produtoId).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+        if (produto.getEstoque() < quantidade) {
+            throw new RuntimeException("Estoque insuficiente");
+        }
+        produto.setEstoque(produto.getEstoque() - quantidade);
+        produtoRepository.save(produto);
+    }
+
+    public void aumentarEstoque(Long produtoId, int quantidade) {
+        Produto produto = produtoRepository.findById(produtoId)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
+        produto.setEstoque(produto.getEstoque() + quantidade);
+        produtoRepository.save(produto);
+    }
+
+
 
 
     public Page<Produto> findAll(Pageable pageable) {

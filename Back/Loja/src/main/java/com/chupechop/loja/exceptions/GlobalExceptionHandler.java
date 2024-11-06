@@ -4,6 +4,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
@@ -45,11 +46,25 @@ public class GlobalExceptionHandler {
             errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
             errorDetail.setProperty("description", "O token JWT é inválido");
         }
+        if (exception instanceof DataIntegrityViolationException) {
+            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), "Erro de integridade de dados");
+            errorDetail.setProperty("description", "Humm, parece que você está tentando inserir um dado que já existe no banco de dados");
+        }
+
+//        @ExceptionHandler(DataIntegrityViolationException.class)
+//        public ProblemDetail handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
+//            logger.error("Data integrity violation: ", exception);
+//            ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), "Erro de integridade de dados");
+//            errorDetail.setProperty("description", "Os dados fornecidos violam uma restrição de integridade");
+//            return errorDetail;
+//        }
 
         if (exception instanceof ExpiredJwtException) {
             errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
             errorDetail.setProperty("description", "O token JWT expirou");
         }
+
+
 
         if (errorDetail == null) {
             errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), exception.getMessage());

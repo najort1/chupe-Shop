@@ -40,6 +40,9 @@ public class Usuario implements UserDetails {
     @Column(name = "criado_em")
     private Date criadoEm;
 
+    @OneToMany(mappedBy = "usuario")
+    private List<Pedido> pedidos;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of((GrantedAuthority) () -> "ROLE_USER");

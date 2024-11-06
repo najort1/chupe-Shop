@@ -1,5 +1,6 @@
 package com.chupechop.loja.service;
 
+import com.chupechop.loja.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -33,12 +34,19 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
-    }
-
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+    public String generateToken(UserDetails userDetails) {
+        if (userDetails instanceof Usuario) {
+            Usuario usuario = (Usuario) userDetails;
+            Map<String, Object> extraClaims = new HashMap<>();
+            extraClaims.put("nome", usuario.getNome());
+            extraClaims.put("imagem", usuario.getImagem());
+            return generateToken(extraClaims, userDetails);
+        }
+        return generateToken(new HashMap<>(), userDetails);
     }
 
     public long getExpirationTime() {
