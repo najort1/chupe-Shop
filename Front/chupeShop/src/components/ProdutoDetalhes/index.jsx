@@ -7,10 +7,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import * as carrinho from "../../hooks/carrinho.js";
 
-
-const ProdutoDetalhes = ({usuarioLogado, setUsuariologado}) => {
-
-
+const ProdutoDetalhes = ({ usuarioLogado, setUsuariologado }) => {
   const [erro, setErro] = useState("");
   const location = useLocation();
   const { produto } = location.state;
@@ -18,28 +15,58 @@ const ProdutoDetalhes = ({usuarioLogado, setUsuariologado}) => {
   const produtoId = produto.id;
   const [headerKey, setHeaderKey] = useState(0); // Estado para forçar a re-renderização do Header
 
+  const converterTokenGoogle = async () => {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      `http://localhost:8080/auth/google-login`,
+      {
+        token,
+      },
+      {
+        validateStatus: function (status) {
+          return status <= 500;
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      localStorage.setItem("token", response.data);
+    }
+
+    setErro(response.data.detail);
+  };
 
   const handleAdicionarProduto = async () => {
     try {
-      const response = await axios.post(`http://localhost:8080/pedido/fazer-pedido`, {
-        produtoId,
-        quantidade: value,
-
-
-      },
-    {
-      validateStatus: function (status) {
-        return status <= 500;
-      },
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      }
-    });
-      if(response.status === 200){
+      const response = await axios.post(
+        `http://localhost:8080/pedido/fazer-pedido`,
+        {
+          produtoId,
+          quantidade: value,
+        },
+        {
+          validateStatus: function (status) {
+            return status <= 500;
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.status === 200) {
         setErro("Produto adicionado ao carrinho com sucesso");
         carrinho.adicionarAoCarrinho(response.data);
-        setHeaderKey(prevKey => prevKey + 1); // Atualiza o estado para forçar a re-renderização do Header
-      }else{
+        setHeaderKey((prevKey) => prevKey + 1); // Atualiza o estado para forçar a re-renderização do Header
+      } else {
+        if (
+          response.data.detail.includes(
+            "The parsed JWT indicates it was signed with the 'RS256'"
+          )
+        ) {
+          await converterTokenGoogle();
+          return await handleAdicionarProduto();
+        }
+
         setErro(response.data.detail);
       }
     } catch (error) {
@@ -48,16 +75,15 @@ const ProdutoDetalhes = ({usuarioLogado, setUsuariologado}) => {
     }
   };
 
-
-
-
   return (
     <>
-            <Header key={headerKey} UserLoggedIn={usuarioLogado} setUsuarioLogado={setUsuariologado}/>
+      <Header
+        key={headerKey}
+        UserLoggedIn={usuarioLogado}
+        setUsuarioLogado={setUsuariologado}
+      />
 
-      <div
-        className="produtoDetalhes text-black grid grid-cols-2 grid-rows-1 gap-[50px] mt-20 xl:flex xl:justify-center xl:items-center xl:gap-[50px]"
-      >
+      <div className="produtoDetalhes text-black grid grid-cols-2 grid-rows-1 gap-[50px] mt-20 xl:flex xl:justify-center xl:items-center xl:gap-[50px]">
         <h1 className="erro text-2xl font-bold text-red-500">{erro}</h1>
         <div className="produtoDetalhesImagem">
           <Image isZoomed width={240} alt={produto.nome} src={produto.imagem} />
@@ -67,20 +93,24 @@ const ProdutoDetalhes = ({usuarioLogado, setUsuariologado}) => {
             {produto.nome} {produto.preco}
           </h1>
           <div className="botoes flex flex-col gap-4 mt-10">
-          <button className="bg-primary-500 text-white py-2 px-4 rounded mt-10 w-full xl:w-full" onClick={handleAdicionarProduto}>Comprar</button>
-          <Input
-      type="number"
-      max={produto.estoque}
-      label="Quantidade"
-      name="quantidade"
-      placeholder="Digite a quantidade"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      className="max-w-md"
-      defaultValue="1"
-    />
+            <button
+              className="bg-primary-500 text-white py-2 px-4 rounded mt-10 w-full xl:w-full"
+              onClick={handleAdicionarProduto}
+            >
+              Comprar
+            </button>
+            <Input
+              type="number"
+              max={produto.estoque}
+              label="Quantidade"
+              name="quantidade"
+              placeholder="Digite a quantidade"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              className="max-w-md"
+              defaultValue="1"
+            />
           </div>
-
         </div>
       </div>
       <div className="informacoesProduto flex-col">

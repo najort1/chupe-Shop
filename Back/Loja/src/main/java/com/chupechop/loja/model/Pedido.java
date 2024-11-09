@@ -1,13 +1,15 @@
 package com.chupechop.loja.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @RequiredArgsConstructor
 @Table(name = "pedido")
 public class Pedido {
@@ -67,4 +69,16 @@ public class Pedido {
         this.status = "PENDENTE";
     }
 
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "id=" + id +
+                ", quantidade=" + quantidade +
+                ", preco=" + preco +
+                ", status='" + status + '\'' +
+                ", data=" + data +
+                ", endereco='" + endereco + '\'' +
+                ", produtos=" + produtos +
+                '}';
+    }
 }

@@ -27,6 +27,14 @@ const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
     if(!localStorage.getItem("token")) return;
     const token = localStorage.getItem("token");
     const usuario = jwtDecode(token);
+
+    if(usuario.iss && usuario.iss.includes('accounts.google.com')) {
+      setNomeUsuario(usuario.name);
+      setEmailUsuario(usuario.email);
+      setFotoUsuario(usuario.picture);
+      return;
+    }
+
     setNomeUsuario(usuario.nome);
     setEmailUsuario(usuario.sub);
     setFotoUsuario(usuario.foto);
@@ -74,15 +82,17 @@ const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
               <p className="font-semibold">Logado como</p>
               <p className="font-semibold">{nomeUsuario}</p>
             </DropdownItem>
-            <DropdownItem key="logout" color="danger" onClick={handleLogout}>
-              Log Out
-            </DropdownItem>
+            <DropdownItem key="logout" color="danger" onClick={handleLogout}>Log Out</DropdownItem>
+            <DropdownItem>Perfil</DropdownItem>
           </DropdownMenu>
         </Dropdown>
 
         <Badge content={itensCarrinho} color="danger" shape="rectangle"
         >
-        <box-icon name='cart' onClick={navegarCarrinho}></box-icon>
+        {
+          isDarkMode ? (<box-icon name='cart' color='#ffffff'></box-icon>) : (
+            <box-icon name='cart'></box-icon>)
+        }
         </Badge>
 
       </NavbarContent>

@@ -1,10 +1,10 @@
 package com.chupechop.loja.model;
 
-
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,7 +15,8 @@ import java.util.List;
 @Entity
 @RequiredArgsConstructor
 @Table(name = "usuario")
-@Data
+@Getter
+@Setter
 public class Usuario implements UserDetails {
 
     @Id
@@ -81,4 +82,15 @@ public class Usuario implements UserDetails {
         criadoEm = new Date();
     }
 
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", email='" + email + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", imagem='" + imagem + '\'' +
+                ", criadoEm=" + criadoEm +
+                '}';
+    }
 }

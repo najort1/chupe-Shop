@@ -5,11 +5,11 @@ import Principal from './components/Main';
 import LoginPage from './components/Login';
 import Cadastro from './components/Cadastro';
 import Carrinho from './components/Carrinho';
+import PrincipalPerfil from './components/Perfil/Principal';
 
 import axios from 'axios';
 import { useState,useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { tr } from 'framer-motion/client';
 
 
 function App() {
@@ -88,7 +88,7 @@ function App() {
     return (
 
       <>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white font-bold p-6
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white font-bold p-6 z-50
         ">
 
           <div className="tituloErro text-center text-2xl m-4">
@@ -120,6 +120,7 @@ function App() {
         <Route path="/login" element={<LoginPage usuarioLogado={usuarioLogado} setUsuariologado={setUsuarioLogado} />} />
         <Route path="/cadastro" element={<Cadastro setUsuariologado={setUsuarioLogado} />} />
         <Route path="/carrinho" element={<Carrinho usuarioLogado={usuarioLogado} setUsuariologado={setUsuarioLogado} />} />
+        <Route path="/perfil" element={<PrincipalPerfil usuarioLogado={usuarioLogado} setUsuariologado={setUsuarioLogado} />} />
       </Routes>
     </Router>
   );

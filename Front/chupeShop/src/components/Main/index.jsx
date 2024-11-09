@@ -68,7 +68,7 @@ const Principal = ({produtos = [], usuarioLogado, setUsuariologado,setProdutos,p
           <Swiper
             modules={[Pagination, A11y, Autoplay]}
             spaceBetween={50}
-            slidesPerView={3}
+            slidesPerView={4}
             autoplay={{ disableOnInteraction: true }}
             pagination={{ clickable: true }}
           >
@@ -111,7 +111,7 @@ const Principal = ({produtos = [], usuarioLogado, setUsuariologado,setProdutos,p
           " />
 
           <section className="produtos gap-2 grid grid-cols-3 mt-20
-            xl:grid-cols-8
+            xl:grid-cols-10
             md:grid-cols-4
           ">
             {Array.isArray(produtos) && produtos.map((item, index) => (

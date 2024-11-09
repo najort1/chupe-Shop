@@ -7,6 +7,8 @@ import axios from "axios";
 
 import React, { useState, useEffect } from 'react';
 
+
+
 const Carrinho = ({usuarioLogado, setUsuariologado}) => {
     const itensCarrinho = carrinho.obterCarrinho();
     const [products, setProducts] = useState(itensCarrinho);
@@ -26,8 +28,8 @@ const Carrinho = ({usuarioLogado, setUsuariologado}) => {
 
         if (respostaApi.status === 204) {
             const novoCarrinho = products.filter((product) => product.id !== id);
-            setProducts(novoCarrinho);
-            carrinho.atualizarCarrinho(novoCarrinho);
+            carrinho.removerDoCarrinho(id);
+            return setProducts(novoCarrinho);
         }else{
             console.log(respostaApi.data.detail);
         }

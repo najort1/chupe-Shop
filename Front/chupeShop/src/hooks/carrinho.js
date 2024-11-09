@@ -1,21 +1,7 @@
 const adicionarAoCarrinho = (produto) => {
     let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
-
-    for(const item of carrinho){
-      
-      if(item.produtoId === produto.produtoId){
-        item.quantidade += produto.quantidade;
-        item.preco += produto.preco * produto.quantidade;
-        item.preco = parseFloat(item.preco.toFixed(2));
-        localStorage.setItem('carrinho', JSON.stringify(carrinho));
-        //
-        return;
-      }
-
-    }
-  
     carrinho.push(produto);
-  
+
     localStorage.setItem('carrinho', JSON.stringify(carrinho));
 };
 
@@ -26,14 +12,17 @@ const obterCarrinho = () => {
 };
 
 const removerDoCarrinho = (produtoId) => {
+  console.log("removendo do carrinho" + produtoId);
     // Recuperar o carrinho atual do localStorage
-    let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
-  
-    // Filtrar o produto a ser removido
-    carrinho = carrinho.filter(produto => produto.produtoId !== produtoId);
-  
+    let carrinho = obterCarrinho();
+
+    // Remover o produto do carrinho
+    carrinho = carrinho.filter(produto => produto.id !== produtoId);
+
     // Salvar o carrinho atualizado no localStorage
     localStorage.setItem('carrinho', JSON.stringify(carrinho));
+
+    return carrinho;
 };
   
 const atualizarQuantidade = (produtoId, novaQuantidade) => {
