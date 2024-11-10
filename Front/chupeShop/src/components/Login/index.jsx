@@ -39,7 +39,7 @@ const LoginPage = ({usuarioLogado, setUsuariologado}) => {
     return (
         <>
             <Header UserLoggedIn={usuarioLogado} setUsuarioLogado={setUsuariologado}/>
-            <div className="loginPage bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col justify-center items-center">
+            <div className="loginPage bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col justify-center items-center ">
                 <h1 className="text-3xl font-bold dark:text-white text-center mb-10">Faça seu login</h1>
 
                 <div className="containerLogin bg-white dark:bg-gray-800 p-10 rounded-lg shadow-lg w-full max-w-md">

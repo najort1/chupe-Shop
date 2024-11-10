@@ -20,7 +20,8 @@ public class ProdutoService {
     }
 
     public void diminuirEstoque(Long produtoId, int quantidade) {
-        Produto produto = produtoRepository.findById(produtoId).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+        Produto produto = produtoRepository.findById(produtoId)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
         if (produto.getEstoque() < quantidade) {
             throw new RuntimeException("Estoque insuficiente");
         }

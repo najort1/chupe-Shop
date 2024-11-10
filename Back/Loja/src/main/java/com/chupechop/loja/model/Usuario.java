@@ -1,5 +1,6 @@
 package com.chupechop.loja.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,7 @@ public class Usuario implements UserDetails {
     private Date criadoEm;
 
     @OneToMany(mappedBy = "usuario")
+    @JsonManagedReference
     private List<Pedido> pedidos;
 
     @Override
@@ -53,10 +55,12 @@ public class Usuario implements UserDetails {
     public String getUsername() {
         return email;
     }
+
     @Override
     public String getPassword() {
         return senha;
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

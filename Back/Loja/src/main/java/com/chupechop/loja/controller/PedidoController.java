@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/pedido")
 public class PedidoController {
@@ -40,15 +42,18 @@ public class PedidoController {
 
     @PostMapping("/fazer-pedido")
     public ResponseEntity<RespostaPedidoFeitoDTO> fazerPedido(@RequestBody FazerPedidoDTO fazerPedidoDTO) {
-
-
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+
+        // Verifique se o produto existe antes de prosseguir
+        Produto produto = produtoService.findById(fazerPedidoDTO.produtoId());
+        if (produto == null) {
+            return ResponseEntity.status(404).build(); // Produto não encontrado
+        }
+
         Pedido pedido = pedidoService.save(fazerPedidoDTO, usuarioLogado);
 
         produtoService.diminuirEstoque(pedido.getProdutoId(), pedido.getQuantidade());
-        Produto produto = produtoService.findById(pedido.getProdutoId());
 
         RespostaPedidoFeitoDTO resposta = new RespostaPedidoFeitoDTO(
                 pedido.getId(),
@@ -59,7 +64,6 @@ public class PedidoController {
                 produto.getImagem(),
                 produto.getNome(),
                 produto.getPreco()
-
         );
         return ResponseEntity.ok(resposta);
     }
@@ -79,6 +83,33 @@ public class PedidoController {
             return ResponseEntity.status(204).build();
         }
         return ResponseEntity.status(403).build(); // Usuário não autorizado
+    }
+
+    @GetMapping("/finalizar-pedido/{id}")
+    public ResponseEntity<Void> finalizarPedido(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        Pedido pedido = pedidoService.findById(id);
+        if (pedido == null) {
+            return ResponseEntity.status(404).build(); // Pedido não encontrado
+        }
+
+        System.out.println("Pedido.getUsuarioId(): " + pedido.getUsuarioId());
+        System.out.println("UsuarioLogado.getId(): " + usuarioLogado.getId());
+        if (pedido.getUsuarioId().equals(usuarioLogado.getId())) {
+            System.out.println("Pedido finalizado");
+            pedidoService.finalizarPedido(id);
+            return ResponseEntity.status(204).build();
+        }
+        return ResponseEntity.status(403).build(); // Usuário não autorizado
+    }
+
+    @GetMapping("/pedidos-finalizados")
+    public ResponseEntity<List<Pedido>> listarPedidosFinalizados() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        List<Pedido> pedidosFinalizados = pedidoService.acharTodosPedidosFinalizados(usuarioLogado.getId());
+        return ResponseEntity.ok(pedidosFinalizados);
     }
 
 

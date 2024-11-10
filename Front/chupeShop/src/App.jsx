@@ -6,7 +6,7 @@ import LoginPage from './components/Login';
 import Cadastro from './components/Cadastro';
 import Carrinho from './components/Carrinho';
 import PrincipalPerfil from './components/Perfil/Principal';
-import Enderecos from './components/Perfil/Endereco';
+import Pedidos from './components/Perfil/Pedidos';
 
 import axios from 'axios';
 import { useState,useEffect } from 'react';
@@ -122,7 +122,7 @@ function App() {
         <Route path="/cadastro" element={<Cadastro setUsuariologado={setUsuarioLogado} />} />
         <Route path="/carrinho" element={<Carrinho usuarioLogado={usuarioLogado} setUsuariologado={setUsuarioLogado} />} />
         <Route path="/perfil" element={<PrincipalPerfil usuarioLogado={usuarioLogado} setUsuariologado={setUsuarioLogado} />} />
-        <Route path="/enderecos" element={<Enderecos usuarioLogado={usuarioLogado} setUsuariologado={setUsuarioLogado} />} />
+        <Route path="/pedidos" element={<Pedidos usuarioLogado={usuarioLogado} setUsuariologado={setUsuarioLogado} />} />
       </Routes>
     </Router>
   );

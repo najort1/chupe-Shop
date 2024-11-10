@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PedidoService {
@@ -32,7 +34,7 @@ public class PedidoService {
 
     public Pedido save(FazerPedidoDTO fazerPedidoDTO, Usuario usuario) {
         Pedido pedido = new Pedido();
-        pedido.setUsuarioId(usuario.getId());
+        pedido.setUsuario(usuario);
         pedido.setProdutoId(fazerPedidoDTO.produtoId());
         pedido.setQuantidade(fazerPedidoDTO.quantidade());
         pedido.setPreco(calcularPreco(fazerPedidoDTO));
@@ -50,5 +52,13 @@ public class PedidoService {
     }
 
 
+    public void finalizarPedido(Long id) {
+        Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Pedido não encontrado"));
+        pedido.setStatus("FINALIZADO");
+        pedidoRepository.save(pedido);
+    }
 
+    public List<Pedido> acharTodosPedidosFinalizados(Long usuarioId) {
+        return pedidoRepository.findAllByUsuario_IdAndStatusEquals(usuarioId, "FINALIZADO");
+    }
 }

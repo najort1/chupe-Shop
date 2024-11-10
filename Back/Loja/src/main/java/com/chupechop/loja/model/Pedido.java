@@ -1,5 +1,6 @@
 package com.chupechop.loja.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -42,26 +43,8 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonBackReference
     private Usuario usuario;
-
-    public void setUsuarioId(Long usuarioId) {
-        this.usuario = new Usuario();
-        this.usuario.setId(usuarioId);
-    }
-
-    public Long getUsuarioId() {
-        return this.usuario.getId();
-    }
-
-    public void setProdutoId(Long produtoId) {
-        Produto produto = new Produto();
-        produto.setId(produtoId);
-        this.produtos = List.of(produto);
-    }
-
-    public Long getProdutoId() {
-        return this.produtos.get(0).getId();
-    }
 
     @PrePersist
     public void prePersist() {
@@ -80,5 +63,30 @@ public class Pedido {
                 ", endereco='" + endereco + '\'' +
                 ", produtos=" + produtos +
                 '}';
+    }
+
+    public Long getProdutoId() {
+        return produtos != null && !produtos.isEmpty() ? produtos.get(0).getId() : null;
+    }
+
+    public void setProdutoId(Long produtoId) {
+        if (produtos != null && !produtos.isEmpty()) {
+            produtos.get(0).setId(produtoId);
+        } else {
+            Produto produto = new Produto();
+            produto.setId(produtoId);
+            produtos = List.of(produto);
+        }
+    }
+
+    public Long getUsuarioId() {
+        return usuario != null ? usuario.getId() : null;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        if (usuario == null) {
+            usuario = new Usuario();
+        }
+        usuario.setId(usuarioId);
     }
 }
