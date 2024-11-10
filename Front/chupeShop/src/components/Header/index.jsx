@@ -22,6 +22,7 @@ const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
   const navegarLogin = () => { navigate('/login') }
   const navegarCarrinho = () => { navigate('/carrinho') }
   const navegarHome = () => { navigate('/') }
+  const navegarPerfil = () => { navigate('/perfil') }
 
   const capturarFotoENome = () => {
     if(!localStorage.getItem("token")) return;
@@ -83,15 +84,15 @@ const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
               <p className="font-semibold">{nomeUsuario}</p>
             </DropdownItem>
             <DropdownItem key="logout" color="danger" onClick={handleLogout}>Log Out</DropdownItem>
-            <DropdownItem>Perfil</DropdownItem>
+            <DropdownItem onClick={navegarPerfil}>Perfil</DropdownItem>
           </DropdownMenu>
         </Dropdown>
 
-        <Badge content={itensCarrinho} color="danger" shape="rectangle"
+        <Badge onClick={navegarCarrinho} content={itensCarrinho} color="danger" shape="rectangle"
         >
         {
-          isDarkMode ? (<box-icon name='cart' color='#ffffff'></box-icon>) : (
-            <box-icon name='cart'></box-icon>)
+          isDarkMode ? (<box-icon name='cart' onClick={navegarCarrinho} color='#ffffff'></box-icon>) : (
+            <box-icon onClick={navegarCarrinho} name='cart'></box-icon>)
         }
         </Badge>
 

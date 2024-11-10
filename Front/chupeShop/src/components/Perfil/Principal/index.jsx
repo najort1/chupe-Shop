@@ -3,6 +3,7 @@ import Footer from "../../Footer";
 import { useState, useEffect } from "react";
 import { Image } from "@nextui-org/react";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 const PrincipalPerfil = ({usuarioLogado, setUsuariologado}) => {
   const [nome, setNome] = useState("Chupetao");
@@ -11,22 +12,75 @@ const PrincipalPerfil = ({usuarioLogado, setUsuariologado}) => {
     "https://i.pinimg.com/564x/f3/6b/fa/f36bfa3b60559e7da0014f91250abf66.jpg"
   );
   const [desabilitado, setDesabilitado] = useState(true);
-  const [cpf, setCpf] = useState("123.456.789-00");
-
+  const [cpf, setCpf] = useState("Cadastre um CPF para maior segurança nas suas compras e também para aumentar seu score :)");
+  const [erro, setErro] = useState("");
   useEffect(() => {
     getUsuario();
   }, []);
 
-  const getUsuario = () => {
+  const getUsuario = async () => {
+    if (!localStorage.getItem("token")) {
+      return;
+    }
+
+    const respostaApiDadosUsuario = await axios.get('http://localhost:8080/usuario/dados', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+    });
+
+    if(respostaApiDadosUsuario.status === 200){
+        const usuario = respostaApiDadosUsuario.data;
+        setNome(usuario.nome);
+        setEmail(usuario.email);
+        setCpf(usuario.cpf);
+        setFoto(usuario.imagem);
+    }else{
+        setErro(respostaApiDadosUsuario.data.detail);
+    }
+
+  };
+
+  const handleEditarUsuario = async () => {
     if (!localStorage.getItem("token")) {
       return;
     }
 
     const token = localStorage.getItem("token");
     const usuario = jwtDecode(token);
-    setNome(usuario.nome);
-    setEmail(usuario.sub);
-    setFoto(usuario.imagem);
+
+    if(usuario.iss && usuario.iss.includes('accounts.google.com')){
+        setErro("Você não pode editar seu perfil pois ele foi criado com uma conta Google, atualize seu perfil adicionando um produto a seu carrinho");
+        return;
+    }
+
+    const data = {
+      nome: nome,
+      email: email,
+      cpf: cpf,
+      imagem: foto,
+    };
+
+    const respostaApi = await axios.put('http://localhost:8080/usuario/editar'
+    , data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+
+        validateStatus: function (status) {
+            return status <= 500;
+        }
+    });
+
+    if(respostaApi.status === 200){
+        setDesabilitado(true);
+        setErro("Seus dados foram atualizados com sucesso contiue aproveitando nossas ofertas :)");
+    }else{
+        setErro(respostaApi.data.detail);
+    }
+
+
+
   };
 
   return (
@@ -46,7 +100,7 @@ const PrincipalPerfil = ({usuarioLogado, setUsuariologado}) => {
         </div>
       </div>
 
-      <div className="perfil-content absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-2xl w-[80%]">
+      <div className="perfil-content absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-2xl w-[80%] max-h-[60%] overflow-auto">
         <div className="perfil-info flex flex-col items-center justify-center">
           <h1 className="boas-vindas font-bold text-2xl text-center text-gray-800 mb-4">
             Bem vindo, {nome}
@@ -96,13 +150,36 @@ const PrincipalPerfil = ({usuarioLogado, setUsuariologado}) => {
             onChange={(e) => setCpf(e.target.value)}
             disabled={desabilitado}
           />
+          
+          <label htmlFor="imagem" className="perfil-label text-gray-800 font-bold mt-4">FOTO DE PERFIL</label>
+            <input
+                type="text"
+                name="imagem"
+                id="imagem"
+                className={`perfil-imagem w-full p-2 bg-gray-200 text-gray-800 font-bold rounded-md mt-2 ${
+                desabilitado ? "cursor-not-allowed" : ""
+                }`}
+                value={foto}
+                onChange={(e) => setFoto(e.target.value)}
+                disabled={desabilitado}
+            />
+        
+
 
           <button
             className="perfil-editar bg-green-500 text-white p-2 rounded-md mt-4"
-            onClick={() => setDesabilitado(!desabilitado)}
+            onClick={
+                desabilitado
+                    ? () => setDesabilitado(false)
+                    : () => handleEditarUsuario()
+            }
+
           >
             {desabilitado ? "Editar" : "Salvar"}
           </button>
+        
+        <p className="erro text-red-500 font-bold mt-4">{erro}</p>
+
         </div>
       </div>
 
