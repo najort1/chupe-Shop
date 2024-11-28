@@ -38,7 +38,7 @@ const Header = ({ UserLoggedIn, setUsuarioLogado}) => {
 
     setNomeUsuario(usuario.nome);
     setEmailUsuario(usuario.sub);
-    setFotoUsuario(usuario.foto);
+    setFotoUsuario(usuario.imagem);
     setItensCarrinho(carrinho.obterCarrinho().length)
   }
 
